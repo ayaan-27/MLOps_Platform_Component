@@ -2,7 +2,7 @@ version: "3.2"
 
 services:
     postgre-db:
-        image: postgres:13.3
+        image: postgres
         container_name: pace_mlflow_db
         environment:
             POSTGRES_MULTIPLE_DATABASES: mlflow,pace,celery
@@ -29,7 +29,7 @@ services:
             - A
     mlflow:
         container_name: pace_mlflow_server
-        image: pace_mlflow_server
+        image: pace_mlflow
         build:
             context: ./mlflow
             dockerfile: Dockerfile
@@ -41,7 +41,7 @@ services:
             - AWS_DEFAULT_REGION=${AWS_REGION}
         networks:
             - A
-        command: mlflow server --backend-store-uri postgresql+psycopg2://mlflow:nextlabs123@postgre-db:5432/mlflow --default-artifact-root s3://mlflow-mphasis/model-store-local/ -h 0.0.0.0
+        command: "Redacted"
         depends_on:
             - postgre-db
 
@@ -51,3 +51,4 @@ networks:
 volumes:
     postgresvol:
     rabbitvol:
+
