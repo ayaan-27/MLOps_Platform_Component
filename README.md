@@ -204,9 +204,3 @@ The API is organized around the following resource groups, all exposed via `app.
 ## Configuration
 
 The `backend/confs/config.ini` file controls database connections, S3 bucket settings, MLflow tracking URI, and model artifact paths. The `backend/confs/config.py` module reads and exposes these values to the rest of the application.
-
----
-
-## License
-
-This project is proprietary. Please refer to your organization's licensing agreement.
