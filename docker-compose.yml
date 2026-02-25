@@ -1,0 +1,53 @@
+version: "3.2"
+
+services:
+    postgre-db:
+        image: postgres:13.3
+        container_name: pace_mlflow_db
+        environment:
+            POSTGRES_MULTIPLE_DATABASES: mlflow,pace,celery
+            POSTGRES_USER: pace_user
+            POSTGRES_PASSWORD: nextlabs123
+            PGDATA: /var/lib/postgresql/data/pgdata
+        volumes:
+            - postgresvol:/var/lib/postgresql/data
+            - ./db_manifest:/docker-entrypoint-initdb.d
+        ports:
+            - 5432:5432
+        networks:
+            - A
+    rabbit:
+        hostname: rabbit
+        image: rabbitmq:3.9.2-management
+        ports:
+            - "5672:5672"
+            - "15672:15672"
+        volumes:
+            - "./rabbit_manifest/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf"
+            - "rabbitvol:/var/lib/rabbitmq"
+        networks:
+            - A
+    mlflow:
+        container_name: pace_mlflow_server
+        image: pace_mlflow_server
+        build:
+            context: ./mlflow
+            dockerfile: Dockerfile
+        ports:
+            - "5000:5000"
+        environment:
+            - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+            - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+            - AWS_DEFAULT_REGION=${AWS_REGION}
+        networks:
+            - A
+        command: mlflow server --backend-store-uri postgresql+psycopg2://mlflow:nextlabs123@postgre-db:5432/mlflow --default-artifact-root s3://mlflow-mphasis/model-store-local/ -h 0.0.0.0
+        depends_on:
+            - postgre-db
+
+networks:
+    A:
+        driver: bridge
+volumes:
+    postgresvol:
+    rabbitvol:
